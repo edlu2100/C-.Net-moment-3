@@ -1,10 +1,4 @@
-﻿/*
-    Simulate a car storage hotel with only plate numbers.
-    The datafile,'carstore.json', created is in the format of Json.
-
-    Written by Mikael Hasselmalm / Mid Sweden University
-*/
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -108,18 +102,58 @@ namespace GuestBook
                         Console.CursorVisible = true;
                         Console.Write("Namn: ");
                         string? author = Console.ReadLine();
+                        Post obj = new Post();
+
+                        // Om det finns text lägg till i gästboken
+                        while (String.IsNullOrEmpty(author))
+                        {
+                            Console.Write("Du måste fylla i ett namn: ");
+                            author = Console.ReadLine();
+                        }
+
                         Console.Write("Skriv inlägg ");
                         string? content = Console.ReadLine();
-                        Post obj = new Post(); // Skapa en ny instans av klassen Post för att skapa inlägget
-                        obj.Author = author;   //Lägg till namn
-                        obj.Content = content; //Lägg till nya innehållet
-                        if(!String.IsNullOrEmpty(content)) guestBook.addPost(obj); //Om det finns text lägg till i gästboken
+                        // Om det finns text lägg till i gästboken
+                        while (String.IsNullOrEmpty(content))
+                        {
+                            Console.Write("Du måste fylla i innehåll: ");
+                            content = Console.ReadLine();
+                        }
+
+                        // Lägg till Author och Content i obj
+                        obj.Author = author;
+                        obj.Content = content;
+
+                        // Lägg till inlägget i gästboken
+                        guestBook.addPost(obj);
                         break;
                     case '2':
                         Console.CursorVisible = true;
                         Console.Write("Ange index att radera: ");
                         string? index = Console.ReadLine(); //Läs index som är angivet av användaren
-                        guestBook.delPost(Convert.ToInt32(index)); //Radera inlägget från gästboken baserat på det angivna indexet
+                        int delNr = Convert.ToInt32(index);
+                        if (delNr >= 0 && delNr < guestBook.getPosts().Count)
+                        {
+                            // Visa innehållet för att varna användaren
+                            Post postToDelete = guestBook.getPosts()[delNr];
+                            Console.WriteLine($"Vill du radera följande :\n{postToDelete.Author} - {postToDelete.Content}");
+                            Console.Write("Vill du fortsätta? (J/N): ");
+                            ConsoleKeyInfo key = Console.ReadKey();
+
+                            if (key.Key == ConsoleKey.J)
+                            {
+                                guestBook.delPost(delNr); // Radera inlägget från gästboken baserat på det angivna indexet
+                                Console.WriteLine("\nInlägget har raderats.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nRadering avbruten.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Index finns inte, testa ett nytt");
+                        }
                         break;
                     case 88: 
                         Environment.Exit(0); // Avsluta programmet om användaren väljer alternativet 'X'
